@@ -1,0 +1,180 @@
+\chapter{ボルツマンマシン}
+ボルツマンマシンとは，脳の神経の基本要素であるニューロン素子が相互に結合した
+集合である。統計物理学の基礎を築いた物理学者であるが，その名の由来は以下の
+議論で明らかになる。
+
+\section{ボルツマンマシンの定義}
+$N$個のニューロン素子を考える。以下，ニューロン素子を単に素子と呼ぶ。
+この素子の集合のエネルギーを
+\begin{equation}
+E_{B}(\bm{S}|\btheta,\bm{w})\triangleq\sum_{i\in\itOmega}\theta_{i}S_{i}
+-\sum_{i,j\in L}w_{ij}S_{i}S_{j}\label{eq:2.1}
+\end{equation}
+と定義する。ここで，$\itOmega=\{1,2,\ldots,N\}$は素子の番号の集合，
+$\bm{S}=\{S_{i}|i\in\itOmega\}$は素子$i$の状態を表す変数であり，
+$\pm 1$の値を取るバイナリ変数とする。$L$は互いに結合している素子対のラベル
+の集合である。$\btheta=\{\theta_{i}|i\in\itOmega\}$,
+$\bm{w}=\{w_{ij}|i,j\in L\}$はそれぞれ閾値，結合荷重と呼ばれる
+モデルパラメータであり，実際の学習においてはこれらのパラメータが調整される。
+結合荷重には$w_{ii}=0,w_{ij}=w_{ji}$が仮定される。
+ここまでみれば分かるが，このエネルギーは磁性の模型のイジング模型の一般形
+になっていることがわかる。
+
+ボルツマンマシンにおいて各素子$i$は時刻$t$における状態$\{S_{i}(t)\}$から，
+以下の確率に従って状態を遷移させる。
+\begin{equation}
+p_{i}(S_{i}(t+1)=1)\triangleq\frac{1}{1+\exp[-2\beta u_{u}(t)]}
+\label{eq:2.2}
+\end{equation}
+$\beta$はある正の定数であり，$u_{i}$は
+\begin{equation}
+u_{i}(t)\triangleq\sum_{j\in\partial i}w_{ij}S_{j}(t)+\theta_{i}
+\label{eq:2.3}
+\end{equation}
+で定義されている。ここで，$\partial i$は素子$i$と結合している素子の番号である。
+各時刻$t$においてランダムに素子を選び出し，式$(\ref{eq:2.2})$に従って状態を
+遷移させていくとボルツマンマシンは初期状態に関わらず，次の平衡分布にたどり着く。
+\begin{equation}
+P_{B}(\bm{S}|\btheta,\bm{w})=\frac{1}{Z_{B}(\btheta,\bm{w})}
+\exp\left[-\beta E_{B}(\bm{S}|\btheta,\bm{w})\right]
+\label{eq:2.4}
+\end{equation}
+ここで，
+\begin{equation}
+Z_{B}(\btheta,\bm{w})\triangleq\sum_{\bm{S}}\exp
+\left[-\beta E_{B}(\bm{S}|\btheta,\bm{w})\right]
+\label{eq:2.5}
+\end{equation}
+は規格化定数である。また，
+\begin{equation}
+\sum_{\bm{S}}=\sum_{S_{1}=\pm 1}\sum_{S_{2}=\pm 1}\cdots\sum_{S_{N}=\pm 1}
+\nonumber
+\end{equation}
+の意味であり，全確率変数の全配位に対する和となっている。分布$(\ref{eq:2.4})$は
+ギブス・ボルツマン分布となっており，これがボルツマンマシンと呼ばれる理由である。
+
+ボルツマンマシンを用いた学習はモデルパラメータを調整し，データの発生源となっている未知の分布
+を再現することで達成される。ボルツマンマシンは構造的に多層パーセプトロン\cite{rosenblatt1958perceptron}
+の働きを含んでいると考えられ，マルコフ確率場の形式をもち，豊富な表現力を有するため，
+パターン認識などさまざまな問題への適用が期待されている。
+
+ここで，ボルツマンマシンがマルコフ確率場に属するモデルであることを示す。マルコフ確率場に属する
+確率分布
+\begin{equation}
+P(\bm{S})\propto\left(\prod_{i\in\itOmega}f_{i}(S_{i})\right)
+\left(\prod_{i,j\in L}f_{ij}(S_{i},S_{j})\right)\label{eq:2.6}
+\end{equation}
+を考える。これは，
+\begin{equation}
+P(\bm{S})\propto\exp\left[\sum_{i\in\itOmega}\log f_{i}(S_{i})
++\sum_{i,j\in L}\log f_{ij}(S_{i},S_{j})\right]\label{eq:2.7}
+\end{equation}
+と変形できる。$S_{i}=\pm 1$とすると，一般性を失わずに
+\begin{eqnarray}
+\log
+f_{i}(S_{i})&=&\frac{S_{i}}{2}\log\frac{f_{i}(1)}{f_{i}(-1)}\label{eq:2.8}\\
+\log f_{ij}(S_{i},S_{j})&=&\frac{S_{i}S_{j}}{4}\log
+\frac{f_{ij}(1,1)f_{ij}(-1,-1)}{f_{ij}(1,-1)f_{ij}(-1,1)}\nonumber\\
+&+&\frac{S_{i}}{4}\log\frac{f_{ij}(1,1)f_{ij}(1,-1)}{f_{ij}(-1,-1)f_{ij}(-1,1)}
++\frac{S_{j}}{4}\log\frac{f_{ij}(1,1)f_{ij}(-1,1)}{f_{ij}(-1,-1)f_{ij}(1,-1)}
+\nonumber\\
+&+&\frac{1}{4}\log
+f_{ij}(1,1)f_{ij}(1,-1)f_{ij}(-1,1)f_{ij}(-1,-1)\label{eq:2.9}
+\end{eqnarray}
+と表すことができる。 これらを式$(\ref{eq:2.7})$に代入し，整理すると
+\begin{eqnarray}
+P(\bm{S})&\propto&\exp\left[\sum_{i\in\itOmega}
+\left(\frac{1}{2}\log\frac{f_{i}(1)}{f_{i}(-1)}
++\sum_{i\in\partial　i}\frac{1}{4}
+\frac{f_{ij}(1,1)f_{ij}(1,-1)}{f_{ij}(-1,-1)f_{ij}(-1,1)}\right)S_{i}\right.
+\nonumber\\
+&+&\sum_{i,j\in　L}
+\left.\left(\frac{1}{4}\log\frac{f_{ij}(1,1)f_{ij}(-1,-1)}{f_{ij}(1,-1)f_{ij}(-1,1)}\right)
+S_{i}S_{j}\right]\label{eq:2.10}
+\end{eqnarray}
+となる。ここで，
+\begin{eqnarray}
+\beta\theta_{i}&=&\frac{1}{2}\log\frac{f_{i}(1)}{f_{i}(-1)}+
+\sum_{j\in\partial i}\frac{1}{4}\log\frac{f_{ij}(1,1)f_{ij}(1,-1)}{
+f_{ij}(-1,1)f_{ij}(-1,1)}\label{eq:2.11}\\
+\beta w_{ij}&=&\frac{1}{4}
+\log\frac{f_{ij}(1,1)f_{ij}(-1,-1)}{f_{ij}(1,-1)f_{ij}(-1,1)}
+\label{eq:2.12}
+\end{eqnarray}
+と対応させることにより，分布$(\ref{eq:2.6})$はボルツマンマシン$(\ref{eq:2.4})$と
+等価であることがわかる。ボルツマンマシンはマルコフ確率場に属するモデルである。
+次節ではボルツマンマシンの学習則を導く。
+\section{ボルツマンマシンの学習}
+ボルツマンマシンに含まれる素子をそれぞれ，可視素子$V$と隠れ素子$H$の集合に分ける。
+すなわち，$\itOmega=V\cup H$である。可視素子はそれぞれデータに対応する入出力の
+素子であり，隠れ素子はボルツマンマシンの内部自由度を向上させる中間素子である。
+実用的には隠れ素子がある場合が重要であるが，理論の簡便さやそれほど自由度を
+必要としないと思われる課題に対してはしばしば隠れ素子なし$(H=\varnothing)$
+のボルツマン素子が考えられることがある。
+
+ボルツマンマシンの学習は$N$次元データ$\bm{d}^{\mu}=\{d_{i}^{\mu}|i\in V\}$
+を$M$セット$\{\bm{d}^{\mu}|\mu=1,2,\ldots,M\}$を観測したとき，隠れ素子
+$\bm{S}_{H}=\{S_{i}|i\in H\}$によって周辺化された分布${\displaystyle
+\sum_{\bm{S}_{H}}P_{B}(\bm{S}|\btheta,\bm{w})}$がデータの経験分布
+\begin{equation}
+P_{0}(\bm{S}_{V})\triangleq\frac{1}{M}\sum_{\mu=1}^{M}
+\prod_{i\in V}\delta(S_{i},d_{i}^{\mu})\label{eq:2.13}
+\end{equation}
+に近くなるようにパラメータ$\btheta,\bm{w}$を調整することで達成される。
+ここで$\bm{S}_{V}=\{S_{i}|i\in V\}$であり，$\delta(x,y)$
+はクロネッカーのデルタ関数を表している。つまり，カルバック・ライブラー情報量
+(以下，KL情報量)
+\begin{equation}
+K(P_{0}\parallel P_{B})\triangleq\sum_{\bm{S}_{V}}
+P_{0}(\bm{S}_{V})\log\frac{P_{0}(\bm{S}_{V})}
+{\displaystyle\sum_{\bm{S}_{H}}P_{B}(\bm{S}|\btheta,\bm{w})}
+\label{eq:2.14}
+\end{equation}
+を最小にするパラメータ$\btheta,\bm{w}$を求めることで達成される。
+
+\subsection{隠れ素子なしのボルツマンマシンの学習則}
+まず，より簡単な場合である隠れ素子なし$(H=\varnothing)$のボルツマンマシン
+の学習則を導出し，その後で隠れ素子ありのボルツマンマシンの学習則を導出する。
+隠れ素子がない場合は$\itOmega=V$であるから考えるべきKL情報量は
+\begin{eqnarray}
+K_{V}(P_{0}||P_{B})&=&\sum_{\bm{S}_{V}}\log\frac{P_{0}(\bm{S}_{V})}
+{P_{B}(\bm{S}_{V}|\btheta,\bm{w})}\nonumber\\
+&=&\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})\log P_{0}(\bm{S}_{V})-
+\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})\log
+P_{B}(\bm{S}_{V}|\btheta,\bm{w})\nonumber\\
+&=&\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})\log P_{0}(\bm{S}_{V})
++\beta\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})E_{B}(\bm{S}|\btheta,\bm{w})
++\log Z_{B}(\btheta,\bm{w})\label{eq:2.15}
+\end{eqnarray}
+となる。パラメータに関してKL情報量$(\ref{eq:2.15})$の極値条件をとると
+\begin{eqnarray}
+\frac{\partial K_{V}(P_{0}\parallel P_{B})}{\partial\theta_{i}}
+&=&\beta\sum_{\bm{S}_{V}}S_{i}P_{B}(\bm{S}_{V}|\btheta,\bm{w})
+-\frac{\beta}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}=0\label{eq:2.16}\\
+\frac{\partial K_{V}(P_{0}\parallel P_{B})}{\partial w_{ij}}
+&=&\beta\sum_{\bm{S}_{V}}S_{i}S_{j}P_{B}(\bm{S}_{V}|\btheta,\bm{w})
+-\frac{\beta}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}d_{j}^{\mu}=0
+\label{eq:2.17}
+\end{eqnarray}
+となる。この極値条件から，隠れ素子なしのボルツマンマシンの学習則は最急降下法を用いて
+\begin{eqnarray}
+\theta_{i}(t+1)&=&\theta_{i}(t)-\beta\eta_{i}\left(
+\sum_{\bm{S}_{V}}S_{i}P_{B}(\bm{S}_{V}|\btheta,\bm{w})-\frac{1}{M}
+\sum_{\mu=1}^{M}d_{i}^{\mu}\right)\label{eq:2.18}\\
+w_{ij}(t+1)&=&w_{ij}(t)-\beta\eta_{ij}\left(
+\sum_{\bm{S}_{V}}S_{i}S_{j}P_{B}(\bm{S}_{V}|\btheta,\bm{w})
+-\frac{1}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}d_{j}^{\mu}\right)
+\label{eq:2.19}
+\end{eqnarray}
+と定式化される。ここで，$(\eta_{i},\eta_{ij})$は学習率と呼ばれる小さな正の
+定数であり，ステップ幅に対応している。$t$はアルゴリズムの時間ステップを表しており，
+$\{\theta_{i}(t),w_{ij}(t)\}$はステップ$t$におけるパラメータの値である。
+適当な初期値を与え，学習則$(\ref{eq:2.18}),(\ref{eq:2.19})$に従い
+パラメータの値を更新していくことで，学習は達成される。学習則をみると$1$回の更新ごと
+にボルツマン分布$P_{B}(\bm{S}_{V}|\btheta,\bm{w})$に関する期待値
+を計算する必要があるが，これは一般に素子数$N$が増加するにつれて計算量が
+$O(2^{N})$で増大してしまう計算困難な問題である。このため，ボルツマンマシンに
+関する期待値を厳密に計算することは現実的ではなく，何らかの効率的な近似計算法
+を考えなければならない。よく用いられる手法にマルコフ連鎖モンテカルロ法があり，
+これを用いることで計算量を削減できるが，それでもなお長い緩和過程が必要となる。
+\subsection{隠れ素子ありのボルツマンマシンの学習則}
