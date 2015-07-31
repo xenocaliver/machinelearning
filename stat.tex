@@ -1,0 +1,412 @@
+\chapter{統計力学的近似計算法}
+前章で述べたように，学習には計算量的な困難が伴うことがわかった。
+本章では，このような困難をさけるため，統計力学の技法を援用した近似
+計算法を解説する。
+\section{統計力学的近似手法}
+統計力学では自由エネルギーと呼ばれる物理量を議論の出発点とすることが
+多い。自由エネルギーとは
+\begin{equation}
+F=-\frac{1}{\beta}\log Z=\sum_{\bm{S}}\mathcal{H}(\bm{S})
+P(\bm{S})+\frac{1}{\beta}\sum_{\bm{S}}P(\bm{S})\log P(\bm{S})
+\label{eq:4.1}
+\end{equation}
+である。ただし，
+\begin{equation}
+Z=\sum_{\bm{S}}\exp[-\beta\mathcal{H}(\bm{S})]\nonumber
+\end{equation}
+であり，状態和，分配関数と呼ばれる。自由エネルギーをパラメータについて
+微分するなどすれば，物理量が得られる。
+
+例えば，ボルツマンマシンの自由エネルギーを考える。
+\begin{equation}
+F_{B}=-\frac{1}{\beta}\log Z_{B}(\bm{S})\label{eq:4.2}
+\end{equation}
+これを$\theta_{i},w_{ij}$で微分すると
+\begin{eqnarray}
+\frac{\partial F_{B}}{\partial\theta_{i}}&=&-\sum_{\bm{S}}
+S_{i}P_{B}(\btheta,\bm{w})=-\langle S_{i}\rangle_{B}\label{eq:4.3}\\
+\frac{\partial F_{B}}{\partial w_{ij}}&=&-\sum_{\bm{S}}
+S_{i}S_{j}P_{B}(\btheta,\bm{w})=-\langle S_{i}S_{j}\rangle_{B}
+\label{eq:4.4}
+\end{eqnarray}
+となり，状態量の$1$次，$2$次モーメントの期待値が求まる。
+
+しかし，期待値はボルツマン分布に関する期待値であり計算は困難である。さらに，その困難さは
+分配関数の計算の困難さに起因している。そこで，試行確率分布$Q$を使った
+\begin{equation}
+\mathcal{F}[Q]=\sum_{\bm{S}}\mathcal{H}(\bm{S})Q(\bm{S})
++\frac{1}{\beta}\sum_{\bm{S}}Q(\bm{S})\log Q(\bm{S})\label{eq:4.5}
+\end{equation}
+という試行自由エネルギーを考える。$\mathcal{F}[Q]$を最小にする確率分布は
+$Q(\bm{S})=P(\bm{S})$であり，試行自由エネルギーは
+\begin{equation}
+F=\min_{Q}\mathcal{F}[Q]\label{eq:4.6}
+\end{equation}
+という性質をもつ。統計力学ではしばしば，この試行自由エネルギーを扱いやすい形式に近似し，
+その最小値を真の自由エネルギー$F$の近似値とする近似的アプローチが取られる。
+この試行分布に関する自由エネルギー$\mathcal{F}[Q]$を\textbf{ベーテ自由エネルギー}
+という。
+
+ベーテ自由エネルギーを起点とする近似手法は情報科学の観点からみるとKL情報量の最小化
+に対応している。ボルツマン分布$P(\bm{S})$と試行分布$Q(\bm{S})$との間の
+KL情報量は
+\begin{equation}
+K(Q\parallel P)=\sum_{\bm{S}}Q(\bm{S})\log\frac{Q(\bm{S})}{P(\bm{S})}
+=\beta(\mathcal{F}[Q]-F)\label{eq:4.7}
+\end{equation}
+と変形できる。真の自由エネルギー$F$は試行確率分布$Q(\bm{S})$に依存しない量
+であるから$K(Q\parallel P)$の$Q(\bm{Q})$に対する最小化は試行自由エネルギー
+$Q(\bm{S})$に対する最小化と直接対応していることがわかる。つまり，式$(\ref{eq:4.7})$
+はKL情報量最小化を試行自由エネルギー最小化という問題に置き換えることによって，
+確率分布を解析する首相に統計力学的な方法論が援用できることを表している。
+\subsection{平均場近似}
+平均場近似では，各素子の状態を取りうる確率分布を
+\begin{equation}
+Q_{i}(S_{i})\triangleq\sum_{\bm{S}\backslash S_{i}}Q(\bm{S})\nonumber
+\end{equation}
+と仮定する。そして，ボルツマンマシン全体の確率分布は
+\begin{equation}
+Q(\bm{S})=\prod_{i\in\itOmega}Q_{i}(S_{i})\label{eq:4.8}
+\end{equation}
+と仮定する。これは各素子は独立に周囲からの影響を受けていると仮定することにほかならない。
+これを試行自由エネルギー$(\ref{eq:4.5})$に代入すると
+\begin{eqnarray}
+\mathcal{F}[Q]&=&\sum_{\bm{S}}\left(-\sum_{i\in\itOmega}\theta_{i}S_{i}
+-\sum_{i,j\in L}w_{ij}S_{i}S_{j}\right)\prod_{i\in\itOmega}
+Q_{i}(S_{i})+\frac{1}{\beta}\sum_{\bm{S}}
+\left(\prod_{i\in\itOmega}Q_{i}(S_{i})\right)
+\log\left(\prod_{i\in\itOmega}Q_{i}(S_{i})\right)\nonumber\\
+&=&-\sum_{i\in\itOmega}\theta_{i}\sum_{S_{i}}S_{i}Q_{i}(S_{i})-
+\sum_{i,j\in L}w_{ij}\sum_{S_{i}}S_{i}Q_{i}(S_{i})
+\sum_{S_{j}}S_{j}Q_{j}(S_{j})
++\frac{1}{\beta}\sum_{i\in\itOmega}\sum_{S_{i}}Q_{i}(S_{i})\log(S_{i})
+\label{eq:4.9}
+\end{eqnarray}
+となる。ここで，各素子の確率変数$S_{i}$の平均値を
+\begin{equation}
+m_{i}\triangleq\sum_{\bm{S}}S_{i}Q(\bm{S})=\sum_{S_{i}}S_{i}Q_{i}(S_{i})
+\label{eq:4.10}
+\end{equation}
+と定義する。$S_{i}=\pm 1$であることから一般性を失わずに
+\begin{equation}
+Q_{i}(S_{i})=\frac{1+m_{i}S_{i}}{2}\label{eq:4.11}
+\end{equation}
+と表せる。これをベーテ自由エネルギー$(\ref{eq:4.10})$に代入すると
+\begin{equation}
+\mathcal{F}[Q]=\mathcal{F}(\bm{m})=-\sum_{i\in\itOmega}
+\theta_{i}m_{i}-\sum_{i,j\in L}w_{ij}m_{i}m_{j}
++\frac{1}{\beta}\sum_{i\in\itOmega}\sum_{S_{i}}\frac{1+S_{i}m_{i}}{2}
+\log\frac{1+S_{i}m_{i}}{2}\label{eq:4.12}
+\end{equation}
+となる。この極値条件は
+\begin{eqnarray}
+\frac{\partial\mathcal{F}(\bm{m})}{\partial m_{i}}&=&
+-\theta_{i}-\sum_{j\in\partial i}w_{ij}m_{ij}+\frac{1}{\beta}
+\sum_{S_{i}}\frac{S_{i}}{2}\log\frac{1+S_{i}m_{i}}{2}\nonumber\\
+&=&-\theta_{i}-\sum_{j\in\partial i}w_{ij}m_{j}+\frac{1}{\beta}
+\tanh^{-1}m_{i}=0\label{eq:4.13}
+\end{eqnarray}
+である。これを整理すると，
+\begin{equation}
+m_{i}=\tanh\left[\beta\left(\theta_{i}+\sum_{i\in\partial
+i}w_{ij}m_{j}\right)\right]\label{eq:4.14}
+\end{equation}
+となる。これは平均場方程式と呼ばれ，$m_{i}$をニュートン法などで数値的に
+解くことができる。平均場近似はその簡便さにより利用が容易であり，汎用性が高い
+近似法である。しかし，数値的な近似精度は高くない。
+\subsection{確率伝搬法}
+平均場近似より近似精度の高い計算手法にベーテ近似がある。ベーテ近似は
+物理学の近似手法であるが，情報科学の分野で独立に考案された確率伝搬法
+と等価であることが知られている\cite{kabashima2004statistical}
+\cite{kabashima1999statistical}。ここでは，確率伝搬法を導出する。
+
+まず，試行分布を次の形式に制限する。
+\begin{equation}
+Q(\bm{S})=\left(\prod_{i\in\itOmega}Q_{i}(S_{i})\right)
+\left(\prod_{i,j\in L}\frac{Q_{ij}(S_{i},S_{j})}
+{Q_{i}(S_{i})Q_{j}(S_{j})}\right)\label{eq:4.15}
+\end{equation}
+ただし，
+\begin{eqnarray}
+Q_{i}(S_{i})&\triangleq&\sum_{\bm{S}\backslash S_{i}}Q(\bm{S})\label{eq:4.16}\\
+Q_{ij}(S_{i},S_{j})&\triangleq&
+\sum_{\bm{S}\backslash\{S_{i},S_{j}\}}Q(\bm{S})\label{eq:4.17}
+\end{eqnarray}
+と定義する。この試行分布は隣接する素子間の相関を考慮した形となっている。
+式$(\ref{eq:4.5})$からベーテ自由エネルギーは
+\begin{eqnarray}
+\mathcal{F}&=&\sum_{\bm{S}}\left(-\sum_{i\in\itOmega}\theta_{i}S_{i}
+-\sum_{i,j\in L}w_{ij}S_{i}S_{j}\right)Q(\bm{S})\nonumber\\
+&+&\frac{1}{\beta}\sum_{\bm{S}}Q(\bm{S})\sum_{i\in\itOmega}\log Q_{i}(S_{i})
++\frac{1}{\beta}\sum_{\bm{S}}Q(\bm{S})\sum_{i,j\in L}\log Q_{ij}(S_{i},S_{j})
+\nonumber\\
+&-&\frac{1}{\beta}\sum_{\bm{S}}Q(\bm{S})\sum_{i,j\in L}\left(
+\log Q_{i}(S_{i})-\log Q_{j}(S_{j})\right)\nonumber\\
+&=&-\sum_{i\in\itOmega}\theta_{i}\sum_{\bm{S}}S_{i}Q(\bm{S})
+\sum_{i,j\in L}w_{ij}\sum_{\bm{S}}S_{i}S_{j}Q(\bm{S})\nonumber\\
+&+&\frac{1}{\beta}\sum_{i\in\itOmega}(1-z_{i})\sum_{S_{i}}Q_{i}(S_{i})
++\frac{1}{\beta}\sum_{i,j\in L}\sum_{S_{i},S_{j}}Q_{ij}(S_{i},S_{j})
+\log Q_{ij}(S_{i},S_{j})\label{eq:4.18}
+\end{eqnarray}
+となる。ここで，$z_{i}$は素子$i$と結合する素子の数であり，$z_{i}=|\partial i|$である。
+試行分布に関する$S_{i}$の期待値を
+\begin{eqnarray}
+m_{i}&\triangleq&\sum_{\bm{S}}S_{i}Q(\bm{S})=\sum_{S_{i}}S_{i}Q_{i}(S_{i})\label{eq:4.19}\\
+m_{ij}&\triangleq&\sum_{\bm{S}}S_{i}S_{j}Q(\bm{S})=\sum_{S_{i},S_{j}}S_{i}S_{j}Q_{ij}(S_{i},S_{j})\label{eq:4.20}
+\end{eqnarray}
+と定義すると，$S_{i}=\pm 1$であることから一般性を失わずに
+\begin{eqnarray}
+Q_{i}(S_{i})&=&\frac{1+S_{i}m_{i}}{2}\label{eq:4.21}\\
+Q_{ij}(S_{i},S_{j})&\triangleq&\frac{1+S_{i}m_{i}+S_{j}m_{j}+S_{i}S_{j}m_{ij}}{4}
+\label{eq:4.22}
+\end{eqnarray}
+とできる。このことからベーテ自由エネルギーは
+\begin{eqnarray}
+\mathcal{F}&=&-\sum_{i\in\itOmega}\theta_{i}m_{i}-\sum_{i,j\in L}w_{ij}m_{ij}
++\frac{1}{\beta}\sum_{i\in\itOmega}(1-z_{i})\sum_{S_{i}}\frac{1+S_{i}m_{i}}{2}
+\log\frac{1+S_{i}m_{i}}{2}\nonumber\\
+&+&\frac{1}{\beta}\sum_{i,j\in
+L}\sum_{S_{i},S_{j}}\frac{1+S_{i}m_{i}+S_{j}m_{j}+S_{i}S_{j}m_{ij}}{4}
+\log\frac{1+S_{i}m_{i}+S_{j}m_{j}+S_{i}S_{j}m_{ij}}{4}\label{eq:4.23}
+\end{eqnarray}
+となり，$\{m_{i},m_{ij}\}$の関数として整理される。
+
+ベーテ自由エネルギーの$\{m_{i},m_{ij}\}$に関する最小値を求めよう。
+$(\ref{eq:4.23})$を$m_{i}$で微分すると
+\begin{eqnarray}
+\frac{\partial\mathcal{F}}{\partial m}&=&-\theta_{i}+
+\frac{1-z_{i}}{\beta}\sum_{S_{i}}\frac{S_{i}}{2}\log\frac{1+S_{i}m_{i}}{2}
++\frac{1}{\beta}\sum_{j\in\partial i}\sum_{S_{i},S_{j}}\frac{S_{i}}{4}
+\log\frac{1+S_{i}m_{i}+S_{j}m_{j}+S_{i}S_{j}m_{ij}}{4}\nonumber\\
+&=&-\theta_{i}+\frac{1-z_{i}}{\beta}\tanh^{-1}m_{i}+\frac{1}{2\beta}
+\sum_{j\in\partial
+i}\sum_{S_{j}}\tanh^{-1}\frac{m_{i}+S_{j}m_{ij}}{1+S_{j}m_{j}}\nonumber\\
+&=&-\theta_{i}+\frac{1-z_{i}}{\beta}\tanh^{-1}m_{i}
++\frac{1}{2\beta}\sum_{i\in\partial i}\left(
+\tanh^{-1}\frac{m_{i}+m_{ij}}{1+m_{j}}+\tanh^{-1}\frac{m_{i}-m_{ij}}{1-m_{ij}}
+\right)\label{eq:4.24}
+\end{eqnarray}
+となる。したがって，極値条件は
+\begin{equation}
+\theta_{i}=\frac{1-z_{i}}{\beta}\tanh^{-1}m_{i}+\frac{1}{2\beta}
+\sum_{j\in\partial i}\left(
+\tanh^{-1}\frac{m_{i}+m_{ij}}{1+m_{j}}+\tanh^{-1}\frac{m_{i}-m_{ij}}{1-m_{ij}}
+\right)\label{eq:4.25}
+\end{equation}
+である。これを変形すると，$z_{i}\neq 1$のとき
+\begin{equation}
+m_{i}=\tanh\left[\frac{\beta}{1-z_{i}}\left\{\theta_{i}-
+\frac{1}{2\beta}\sum_{j\in\partial i}
+\left(
+\tanh^{-1}\frac{m_{i}+m_{ij}}{1+m_{j}}+\tanh^{-1}\frac{m_{i}-m_{ij}}{1-m_{ij}}
+\right)\right\}\right]
+\end{equation}
+が得られる。これは$m_{i}$を決める方程式となる。また，式$(\ref{eq:4.23})$を$m_{ij}$で微分
+すると
+\begin{equation}
+\frac{\partial\mathcal{F}}{\partial m_{ij}}=
+-w_{ij}+\frac{1}{\beta}\sum_{S_{i},S_{j}}\frac{S_{i}S_{j}}{4}
+\log\frac{1+S_{i}m_{i}+S_{j}m_{j}+S_{i}S_{j}m_{ij}}{4}\nonumber
+\end{equation}
+を得る。ここで，公式
+\begin{equation}
+\frac{1}{2}\log\frac{1+x}{1-x}=\tanh^{-1}x\label{eq:atanh}
+\end{equation}
+を使う。$x=m_{i}+S_{j}m_{ij}$と考えれば，
+\begin{eqnarray}
+\frac{\partial\mathcal{F}}{\partial m_{ij}}&=&-w_{ij}+\frac{1}{2\beta}
+\sum_{S_{j}}S_{j}\tanh^{-1}\frac{m_{i}+S_{j}m_{ij}}{1+S_{j}m_{j}}\nonumber\\
+&=&-w_{ij}+\frac{1}{2\beta}\left(
+\tanh^{-1}\frac{m_{i}+m_{ij}}{1+m_{j}}-\tanh^{-1}\frac{m_{i}-m_{ij}}{1-m_{j}}
+\right)\label{eq:4.27}
+\end{eqnarray}
+を得る。極値条件は
+\begin{equation}
+w_{ij}=\frac{1}{2\beta}\left(]
+\tanh^{-1}\frac{m_{i}+m_{ij}}{1+m_{j}}-\tanh^{-1}\frac{m_{i}-m_{ij}}{1-m_{j}}
+\right)\label{eq:4.28}
+\end{equation}
+である。これをさらに$m_{ij}$を求める式に変形する。
+\begin{eqnarray}
+A&=&\frac{m_{i}+m_{ij}}{1+m_{j}}\nonumber\\
+B&=&\frac{m_{i}-m_{ij}}{1-m_{j}}\nonumber
+\end{eqnarray}
+とおくと
+\begin{eqnarray}
+2\beta w_{ij}&=&\tanh^{-1}A-\tanh^{-1}B\nonumber\\
+&=&\frac{1}{2}\log\frac{1+A}{1-A}-\frac{1}{2}\log\frac{1+B}{1-B}\nonumber
+\end{eqnarray}
+となる。よって
+\begin{eqnarray}
+4\beta w_{ij}&=&\log\frac{1+A}{1-A}-\log\frac{1+B}{1-B}\nonumber\\
+&=&\log\frac{1+A}{1+B}\frac{1-B}{1-A}\nonumber
+\end{eqnarray}
+となる。したがって
+\begin{equation}
+e^{4\beta w_{ij}}=\frac{1+A}{1+B}\frac{1-B}{1-A}\nonumber
+\end{equation}
+である。
+\begin{equation}
+(1+B)(1-A)e^{4\beta w_{ij}}=(1+A)(1-B)\nonumber
+\end{equation}
+\begin{equation}
+(1-A+B-AB)e^{4\beta w_{ij}}=1+A-B-AB\nonumber
+\end{equation}
+\begin{equation}
+AB(e^{4\beta w_{ij}}-1)+(e^{4\beta w_{ij}}+1)(A-B)-e^{4\beta
+w_{ij}}+1=0\nonumber
+\end{equation}
+\begin{equation}
+AB+\cot(2\beta w_{ij})(A-B)-1=0\nonumber
+\end{equation}
+である。ここで
+\begin{eqnarray}
+AB&=&\frac{m_{i}^{2}-m_{ij}^{2}}{1-m_{j}^{2}}\nonumber\\
+A-B&=&\frac{(1-m_{j})(m_{i}+m_{ij})-(1+m_{j})(m_{i}-m_{ij})}{1-m_{j^{2}}}\nonumber\\
+&=&\frac{m_{i}-m_{i}m_{j}+m_{ij}-m_{j}m_{ij}-m_{i}-m_{i}m_{j}+m_{ij}+m_{j}m_{ij}}
+{1-m_{j}^{2}}\nonumber\\
+&=&\frac{2m_{ij}-2m_{i}m_{j}}{1-m_{j}^{2}}\nonumber
+\end{eqnarray}
+であるから
+\begin{equation}
+m_{i}^{2}-m_{ij}^{2}+\cot(2\beta
+w_{ij})(2m_{ij}-2m_{i}m_{j})-1+m_{j}^{2}=0\nonumber
+\end{equation}
+\begin{equation}
+m_{ij}^{2}-2\cot(2\beta w_{ij})m_{ij}+2m_{i}m_{j}+1-m_{i}^2-m_{j}^{2}=0\nonumber
+\end{equation}
+である。この$m_{ij}$に関する二次方程式を解くと
+\begin{equation}
+m_{ij}=\cot(2\beta w_{ij})\left\{1\pm
+\sqrt{1-(1-m_{i}^{2}-m_{j}^{2})\tanh^{2}(2\beta
+w_{ij})-2m_{i}m_{j}\tanh^{2}(2\beta w_{ij})}\right\}\label{eq:4.29}
+\end{equation}
+を得る。$|m_{ij}|\leqq 1$という条件から
+\begin{equation}
+m_{ij}=\cot(2\beta w_{ij})\left\{1-
+\sqrt{1-(1-m_{i}^{2}-m_{j}^{2})\tanh^{2}(2\beta
+w_{ij})-2m_{i}m_{j}\tanh^{2}(2\beta w_{ij})}\right\}\label{eq:4.30}
+\end{equation}
+が得られる。これが$m_{ij}$を決める式となる。
+
+これらから$m_{i},m_{ij}$を数値的に求めることが原理的にはできるはずであるが，さらに簡単な
+方式を求める。まず，
+\begin{equation}
+\mathcal{M}_{j\rightarrow i}\triangleq-\frac{1}{2}
+\left(\tanh^{-1}\frac{m_{i}+m_{ij}}{1+m_{j}}+\tanh^{-1}\frac{m_{i}-m_{ij}}{1-m_{j}}
+\right)+\tanh^{-1}m_{i}\label{eq:4.32}
+\end{equation}
+という量を定義する。$(\ref{eq:4.25})$より
+\begin{equation}
+\tanh^{-1}m_{i}=\beta\theta_{i}+\sum_{j\in\partial i}\mathcal{M}_{j\rightarrow
+i}
+\label{eq:4.31}
+\end{equation}
+であるから，$\mathcal{M}_{j\rightarrow i}$がわかれば，$m_{i}$がわかることになる。またしても
+公式$(\ref{eq:atanh})$を使うと
+\begin{equation}
+\mathcal{M}_{i\rightarrow j}=-\frac{1}{4}\log
+\frac{1+m_{j}+m_{i}+m_{ij}}{1-m_{j}+m_{i}-m_{ij}}
+-\frac{1}{4}\log\frac{1+m_{j}-m_{i}-m_{ij}}{1-m_{j}-m_{i}+m_{ij}}
+-\frac{1}{2}\log\frac{1+m_{j}}{1-m_{j}}\nonumber
+\end{equation}
+ここで，
+\begin{eqnarray}
+1+m_{j}&=&a\nonumber\\
+1-m_{j}&=&b\nonumber\\
+m_{i}+m_{ij}&=&c\nonumber\\
+m_{i}-m_{ij}&=&d\nonumber
+\end{eqnarray}
+とおくと，
+\begin{eqnarray}
+\mathcal{M}_{i\rightarrow
+j}&=&-\frac{1}{4}\log\frac{a+c}{b+d}-\log\frac{a-c}{b-d}+\frac{1}{2}\log\frac{a}{b}
+\nonumber\\
+&=&\frac{1}{4}\log\frac{b+d}{a+c}+\frac{1}{4}\log\frac{b-d}{a-c}+\frac{1}{2}\log\frac{a}{b}
+\nonumber\\
+&=&\frac{1}{2}\log\left(\sqrt{\frac{b+d}{a+c}\frac{b-d}{a-c}}\frac{a}{b}\right)\nonumber\\
+&=&\frac{1}{2}\log\frac{\displaystyle\frac{2a}{\sqrt{a^{2}-c^{2}}}}
+{\displaystyle\frac{2b}{\sqrt{b^{2}-d^{2}}}}\nonumber
+\end{eqnarray}
+ここで分子は
+\begin{equation}
+\frac{\sqrt{2a}}{\sqrt{a^{2}-c^{2}}}=\frac{a+c+a-c}{\sqrt{a^{2}-c^{2}}}
+=\sqrt{\frac{a+c}{a-c}}+\sqrt{\frac{a-c}{a+c}}\nonumber
+\end{equation}
+となる。分母も同様で，
+\begin{eqnarray}
+\mathcal{M}_{i\rightarrow j}&=&\frac{1}{2}\log
+\frac{\displaystyle\sqrt{\frac{a+c}{a-c}}+\sqrt{\frac{a-c}{a+c}}}
+{\displaystyle\sqrt{\frac{b+d}{b-d}}+\sqrt{\frac{b-d}{b+d}}}\nonumber\\
+&=&\frac{1}{2}\log\frac{\displaystyle\cosh\left(\frac{1}{2}\log\frac{a+c}{a-c}\right)}
+{\displaystyle\cosh\left(\frac{1}{2}\log\frac{b+d}{b-d}\right)}\nonumber
+\end{eqnarray}
+となる。ここでまたしても，公式$(\ref{eq:atanh})$を使うと
+\begin{equation}
+\mathcal{M}_{i\rightarrow j}=\frac{1}{2}\log\frac{\displaystyle
+\cosh\left(\tanh^{-1}\frac{c}{a}\right)}
+{\displaystyle\cosh\left(\tanh^{-1}\frac{d}{b}\right)}
+=\frac{1}{2}\log
+\frac{\displaystyle\cosh\left(\tanh^{-1}\frac{m_{i}+m_{ij}}{1+m_{j}}\right)}
+{\displaystyle\cosh\left(\tanh^{-1}\frac{m_{i}-m_{ij}}{1-m_{j}}\right)}
+\label{eq:4.33}
+\end{equation}
+が得られる。また，式$(\ref{eq:4.28})$は
+\begin{equation}
+\tanh^{-1}\frac{m_{i}+m_{ij}}{1+m_{j}}-\tanh^{-1}\frac{m_{i}-m_{ij}}{1-m_{j}}
+=2\beta w_{ij}\label{eq:4.34}
+\end{equation}
+と変形でき，式$(\ref{eq:4.31}),(\ref{eq:4.32})$より
+\begin{eqnarray}
+\tanh^{-1}\frac{m_{i}+m_{ij}}{1+m_{j}}-\tanh^{-1}\frac{m_{i}-m_{ij}}{1-m_{j}}
+&=&2\tanh^{-1}m_{i}-2\mathcal{M}_{i\rightarrow j}\nonumber\\
+&=&2\beta\theta_{i}+2\sum_{k\partial i\backslash j}\mathcal{M}_{k\rightarrow i}
+\label{eq:4.35}
+\end{eqnarray}
+となる。式$(\ref{eq:4.34}),(\ref{eq:4.35})$を連立させると
+\begin{eqnarray}
+\tanh^{-1}\frac{m_{i}+m_{ij}}{1+m_{j}}&=&\beta\theta_{i}+\beta w_{ij}
++\sum_{k\in\partial i\backslash j}\mathcal{M}_{k\rightarrow i}\label{eq:4.36}\\
+\tanh^{-1}\frac{m_{i}-m_{ij}}{1-m_{j}}&=&\beta\theta_{i}-\beta w_{ij}
++\sum_{k\in\partial i\backslash j}\mathcal{M}_{k\rightarrow i}\label{eq:4.37}
+\end{eqnarray}
+を得る。これを式$(\ref{eq:4.33})$に代入すると
+\begin{eqnarray}
+\mathcal{M}_{i\rightarrow j}&=&\frac{1}{2}\log
+\frac{\displaystyle\cosh\left(\beta\theta_{i}+\beta w_{ij}
++\sum_{k\in\partial i\backslash j}\mathcal{M}_{k\rightarrow i}\right)}
+{\displaystyle\cosh\left(\beta\theta_{i}-\beta w_{ij}
++\sum_{k\in\partial i\backslash j}\mathcal{M}_{k\rightarrow i}\right)}\nonumber
+\end{eqnarray}
+となる。ここで，双曲線関数の加法定理
+\begin{equation}
+\cosh(\alpha\pm\beta)=\cosh(\alpha)\cosh(\beta)\pm\sinh(\alpha)\sinh(\beta)
+\nonumber
+\end{equation}
+を使う。そうすると
+\begin{equation}
+\mathcal{M}_{i\rightarrow j}=\frac{1}{2}\log\frac{
+\displaystyle 1+\tanh(\beta w_{ij})\tanh\left(\beta\theta_{i}+
+\sum_{k\in\partial i\backslash j}\mathcal{M}_{k\rightarrow i}\right)}
+{\displaystyle 1-\tanh(\beta w_{ij})\tanh\left(\beta\theta_{i}+
+\sum_{k\in\partial i\backslash j}\mathcal{M}_{k\rightarrow i}\right)}
+\label{eq:4.39}
+\end{equation}
+となる。さらに公式$(\ref{eq:atanh})$を使うと
+\begin{equation}
+\mathcal{M}_{i\rightarrow j}=\tanh^{-1}\left[
+\tanh(\beta w_{ij})\tanh\left(\beta\theta_{i}+
+\sum_{k\in\partial i\backslash j}\mathcal{M}_{k\rightarrow i}\right)
+\right]\label{eq:4.40}
+\end{equation}
+と変形できる。この式がメッセージ$\{\mathcal{M}_{i\rightarrow j}$を決める方程式となり，
+これを数値的に解くことによりメッセージ$\{\mathcal{M}_{i\rightarrow j}\}$の値を決める
+ことができる。これが決まれば，式$(\ref{eq:4.31})$より
+\begin{equation}
+m_{i}=\tanh\left(\beta\theta_{i}+\sum_{j\in\partial
+i}\mathcal{M}_{j\rightarrow i}\right)\label{eq:4.41}
+\end{equation}
+という関係があるため，$m_{i}$が決まる。$m_{i}$が決まれば$m_{ij}$も決まる。
+このようにして，ベーテ自由エネルギーの極小値を探す問題の解を探すことができる。
+
+以上のように，統計力学の近似手法を用いることで，計算量を減らす学習則を導くことができた。

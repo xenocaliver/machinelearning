@@ -1,0 +1,133 @@
+\chapter{Contrasive Divergence法}
+本章では，CD法について説明する。
+\section{Contrasive Divergence法}
+ボルツマンマシンを用いた学習では期待値の計算量が課題となっている。
+確率的近似計算法であるマルコフ連鎖モンテカルロ法を用いるとしても長い緩和過程
+が必要となる。CD 法はマルコフ連鎖モンテカルロ法をもとにした近似学習アルゴリズム
+であるが，長い緩和過程を避け，高速に動作するように設計されている。しかし，その高
+速な動作には条件がある。それは学習に用いるボルツマンマシンが可視素子のみで構成さ
+れていること，または隠れ素子を含んでいたとしても隠れ素子同士には結合がないことで
+ある。まずはボルツマンマシンが可視素子のみで構成されている場合，つまり隠れ素子な
+しのボルツマンマシンにおけるCD 法について説明する。
+\subsection{隠れ素子なしのボルツマンマシンの学習則}
+隠れ素子なしのボルツマンマシンの学習則を導出した際に出発点となったのは
+KL情報量である。
+\begin{equation}
+K_{V}(P_{0}\parallel P_{B})=\sum_{\bm{S}_{V}}
+P_{0}(\bm{S}_{V})\log\frac{P_{0}(\bm{S}_{V})}{P_{B}(\bm{S}_{V}|\btheta,\bm{w})}
+\label{eq:3.1}
+\end{equation}
+これに対し，CD法の更新則の導出の出発点となるのは次のContrastive Divergenceと
+呼ばれる量である。
+\begin{equation}
+C_{V}\triangleq K_{V}(P_{0}\parallel P_{\infty})
+-K_{V}(P_{n}\parallel P_{\infty})\label{eq:3.2}
+\end{equation}
+ここで$P_{n}$はデータの経験分布$P_{0}$からマルコフ連鎖モンテカルロ法
+により$n$ステップ遷移させた分布であり，長い緩和過程を経た後の分布を
+$P_{\infty}=P_{B}(\bm{S}|\btheta,\bm{w})$と表している。
+ここではマルコフ連鎖モンテカルロ法の更新アルゴリズムとしてメトロポリス法
+を採用する。すなわち，状態$\bm{S}$から$\bm{S}^{\prime}$に遷移させる
+かどうかを判断するのに$2$つの状態の実現確率の比で決定する。すなわち，
+\begin{equation}
+\frac{P_{B}(\bm{S}^{\prime})}{P_{B}(\bm{S})}
+=\exp\left[-2\beta S_{i}\left(\theta_{i}+\sum_{j\in\partial i}
+w_{ij}S_{j}\right)\right]\label{eq:3.3}
+\end{equation}
+である。
+
+では，KL情報量$K(P_{0}\parallel P_{\infty})$をパラメータについて微分すると
+\begin{eqnarray}
+\frac{\partial K_{V}(P_{0}\parallel P_{\infty})}
+{\partial\theta_{i}}&=&\beta\langle S_{i}\rangle_{B}
+-\frac{\beta}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}\label{eq:3.6}\\
+\frac{\partial K_{V}(P_{0}\parallel P_{\infty})}
+{\partial w_{ij}}=\beta\langle S_{i}S_{j}\rangle_{B}
+-\frac{\beta}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}d_{j}^{\mu}
+\label{eq:3.7}
+\end{eqnarray}
+となる。一方，KL情報量$K_{V}(P_{n}\parallel P_{\infty})$を
+パラメータについて微分すると
+\begin{eqnarray}
+\frac{\partial K_{V}(P_{n}\parallel P_{\infty})}
+{\partial\theta_{i}}&=&\beta\langle S_{i}\rangle_{B}
+-\beta\langle S_{i}\rangle_{n}
++\frac{\partial P_{n}}{\partial\theta_{i}}
+\frac{K_{V}(P_{n}\parallel P_{\infty})}{\partial P_{n}}\label{eq:3.8}\\
+\frac{\partial K_{V}(P_{n}\parallel P_{\infty})}{\partial w_{ij}}
+&=&\beta\langle S_{i}S_{j}\rangle_{B}-\beta\langle S_{i}S_{j}\rangle_{n}
++\frac{\partial P_{n}}{\partial w_{ij}}
+\frac{\partial K_{V}(P_{n}\parallel P_{\infty})}{\partial P_{n}}
+\label{eq:3.9}
+\end{eqnarray}
+となる。ここで$\langle\cdot\rangle_{n}$は確率分布$P_{n}$に関する期待値である。
+式$(\ref{eq:3.6})-(\ref{eq:3.9})$の結果からContrastive Divergenceのパラメータ
+に関する極値条件は
+\begin{eqnarray}
+\frac{\partial C_{V}}{\partial\theta_{i}}&=&\beta\langle S_{i}\rangle_{n}
+-\frac{\beta}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}-\frac{\partial
+P_{n}}{\partial\theta_{i}}\frac{\partial K_{V}(P_{n}\parallel P_{\infty})}
+{\partial P_{n}}=0\label{eq:3.10}\\
+\frac{\partial C}{\partial w_{ij}}&=&\beta\langle S_{i}S_{j}\rangle_{n}
+-\frac{\beta}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}d_{j}^{\mu}
+-\frac{\partial P_{n}}{\partial w_{ij}}\frac{\partial
+K_{V}(P_{n}\parallel P_{\infty})}{\partial P_{n}}=0\label{eq:3.11}
+\end{eqnarray}
+となる。学習則において，$(\ref{eq:3.10}),(\ref{eq:3.11})$の第$3$項は簡便のため無視
+される。この項は他の$2$項に比べて小さいことが知られている。これを省略したうえで最急降下法によって
+隠れ素子のないボルツマンマシンに対するCD法の更新則は
+\begin{eqnarray}
+\theta_{i}(t+1)&=&\theta_{i}(t)-\beta\eta_{i}
+\left(\langle S_{i}\rangle_{n}-\frac{1}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}\right)
+\label{eq:3.12}\\
+w_{ij}(t+1)&=&w_{ij}(t)-\beta\eta_{ij}\left(\langle S_{i}S_{j}\rangle_{n}
+-\frac{1}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}d_{j}^{\mu}\right)
+\label{eq:3.13}
+\end{eqnarray}
+となる。ここで注目すべきことは，これらの更新則にボルツマン分布に関する期待値が現れていない
+ことである。CD法ではKL情報量の差をとることによってボルツマン分布に関する期待値の計算を回避
+できている。その代わりに$\langle\cdot\rangle_{n}$が現れている。CD法は本来なら，長い
+緩和時間が必要な$\langle\cdot\rangle_{B}$の計算を$\langle\cdot\rangle_{n}$
+で置き換えることで計算量を削減していると解釈できる。これまでの研究で$n$は小さい数で問題なく，
+$n=1$でもよい精度で学習できることが判明しており，非常に高速な近似学習アルゴリズムとなっている。
+\subsection{隠れ素子ありのボルツマンマシンの学習則}
+隠れ素子ありのボルツマンマシンの学習則も同様に議論できる。KL情報量を
+\begin{equation}
+K_{H}(\itPhi_{0}\parallel P_{B})=\sum_{\bm{S}}\itPhi_{0}(\bm{S})
+\frac{\itPhi_{0}(\bm{S})}{P_{B}(\bm{S}|\btheta,\bm{w})}\label{eq:3.14}
+\end{equation}
+と捉え直す。ここで
+\begin{eqnarray}
+\itPhi_{0}(\bm{S})&\triangleq&q_{0}(\bm{S}_{H}|\bm{S}_{V},\btheta,\bm{w})P_{0}(\bm{S}_{V})
+\label{eq:3.15}\\
+&=&\frac{1}{M}\sum_{\mu=1}^{M}q_{0}(\bm{S}_{H})|\bm{d}^{\mu},\btheta,\bm{w})
+\prod_{i\in V}\delta(S_{i},d_{i}^{\mu})\label{eq:3.16}
+\end{eqnarray}
+と定義する。これに対してもContrasive Divergenceを定義する。
+\begin{equation}
+C_{H}\triangleq K_{H}(\itPhi_{0}\parallel P_{\infty})
+-K_{H}(\itPhi_{n}\parallel P_{\infty})\label{eq:3.17}
+\end{equation}
+$C_{H}$に関する極値条件からCD法の更新則を定式化すると以下のようになる。
+\begin{eqnarray}
+\theta_{i}(t+1)&=&\theta_{i}(t)-\beta\eta_{i}\left(
+\sum_{\bm{S}}S_{i}\itPhi_{n}(\bm{S}|\btheta,\bm{w})
+-\sum_{\bm{S}}S_{i}q_{0}(\bm{S}_{H}|\bm{S}_{V},\btheta,\bm{w})
+P_{0}(\bm{S}_{V})\right)\label{eq:3.27}\\
+w_{ij}(t+1)&=&w_{ij}(t)-\beta\eta_{ij}
+\left(\sum_{\bm{S}}S_{i}S_{j}\itPhi_{n}(\bm{S}|\btheta,\bm{w})
+-\sum_{\bm{S}}S_{i}S_{j}q_{0}(\bm{S}_{H}|\bm{S}_{V},\btheta,\bm{w})P_{0}
+(\bm{S}_{V})\right)\label{eq:3.28}
+\end{eqnarray}
+隠れ素子がない場合と同様にボルツマンマシンに関する期待値の計算を回避できている
+ことがわかる。しかしながら，括弧内第$1$項の計算量の問題はいまだ残っている。
+
+ここでは，隠れ素子どうしが結合を持たない場合$(L_{H}=\varnothing)$である場合
+に問題を限定する。そうすると，
+\begin{equation}
+q_{0}(\bm{S}_{H}|\bm{d}^{\mu},\btheta,\bm{w})
+\propto\prod_{i\in H}\exp\left[
+-\beta\left(\theta_{i}+\sum_{j\in\partial_{V}i}w_{ij}d_{j}^{\mu}\right)S_{i}
+\right]\label{eq:3.35}
+\end{equation}
+と整理でき，隠れ素子がそれぞれ独立な確率分布になっていることがわかる。

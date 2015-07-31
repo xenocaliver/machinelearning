@@ -178,3 +178,101 @@ $O(2^{N})$で増大してしまう計算困難な問題である。このため�
 を考えなければならない。よく用いられる手法にマルコフ連鎖モンテカルロ法があり，
 これを用いることで計算量を削減できるが，それでもなお長い緩和過程が必要となる。
 \subsection{隠れ素子ありのボルツマンマシンの学習則}
+次に隠れ素子ありのボルツマンマシンの学習則を導出する。式$(\ref{eq:2.14})$
+のKL情報量は以下のように整理される。
+\begin{eqnarray}
+K(P_{0}\parallel P_{B})&\triangleq&\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})
+\log\frac{P_{0}(\bm{S}_{V})}{\displaystyle\sum_{\bm{S}_{H}}P_{B}(\bm{S}|\btheta,\bm{w})}\nonumber\\
+&=&\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})\log P_{0}(\bm{S}_{V})
+-\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})\log\sum_{\bm{S}_{H}}P_{B}(\bm{S}|\btheta,\bm{w})\nonumber\\
+&=&\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})\log P_{0}(\bm{S}_{V})
+-\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})\log\sum_{\bm{S}_{H}}\exp
+\left[-\beta E_{B}(\bm{S}|\btheta,\bm{w})\right]
++\log Z_{B}(\btheta,\bm{w})\nonumber\\
+&=&\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})\log P_{0}(\bm{S}_{V})
+-\beta\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})\left(\sum_{i\in
+V}\theta_{i}S_{i}+\sum_{i,j\in L}w_{ij}S_{i}S_{j}\right)\nonumber\\
+&-&\sum_{\bm{S}_{V}}P_{0}(\bm{S}_{V})\log\sum_{\bm{S}_{H}}
+\exp\left[-\beta\sum_{i\in H}\left(\theta_{i}+\sum_{j\in\partial_{V}i}
+w_{ij}S_{j}\right)S_{i}-\beta\sum_{i,j\in
+L_{H}}w_{ij}S_{i}S_{j}\right]\nonumber\\
+&+&\log Z_{B}(\btheta,\bm{w})\label{eq:2.20}
+\end{eqnarray}
+ここで，$\partial_{V}i$は素子$i$に結合している可視素子の集合を表している。
+$L_{V}$は結合している可視素子の集合，$L_{H}$は結合している隠れ素子の集合を表している。
+パラメータに関してKL情報量の極値条件をとると
+\begin{eqnarray}
+\frac{\partial K(P_{0}\parallel P_{B})}{\partial\theta_{i}}
+&=&\beta\sum_{\bm{S}}S_{i}P_{B}(\bm{S}|\btheta,\bm{w})
+-\beta\sum_{\bm{S}}S_{i}q_{0}(\bm{S}_{H}|\bm{S}_{V},\btheta,\bm{w})P_{0}(\bm{S}_{V})=0
+\label{eq:2.21}\nonumber\\
+\frac{\partial K(P_{0}\parallel P_{B})}{\partial w_{ij}}
+&=&\beta\sum_{\bm{S}}S_{i}S_{j}P_{B}(\bm{S}|\btheta,\bm{w})
+-\beta\sum_{\bm{S}}S_{i}S_{j}q_{0}(\bm{S}_{H}|\bm{S}_{V},\btheta,\bm{w})P_{0}(\bm{S}_{V})=0
+\label{eq:2.22}\nonumber\\
+\end{eqnarray}
+となる。ここで，
+\begin{eqnarray}
+q_{0}(\bm{S}_{H}|\bm{S}_{V},\btheta,\bm{w})&\triangleq&
+\frac{P_{B}(\bm{S}|\btheta,\bm{w})}{\displaystyle\sum_{\bm{S}_{H}}P_{B}(\bm{S}|\btheta,\bm{w})}\label{eq:2.23}\\
+&\propto&\exp\left[-\beta\sum_{i\in H}\left(\theta_{i}
++\sum_{j\in\partial_{V}i}w_{ij}S_{j}\right)-\beta\sum_{i,j\in
+L_{H}}w_{ij}S_{i}S_{j}\right]\label{eq:2.24}
+\end{eqnarray}
+と定義している。式$(\ref{eq:2.21}),(\ref{eq:2.22})$の極値条件から，隠れ素子のある
+ボルツマンマシンの学習則は最急降下法を用いて
+\begin{eqnarray}
+\theta_{i}(t+1)&=&\theta_{i}(t)-\beta\eta_{i}
+\left(\sum_{\bm{S}}S_{i}P_{B}(\bm{S}|\btheta,\bm{w})
+-\sum_{\bm{S}}S_{i}q_{0}(\bm{S}_{H}|\bm{S}_{V},\btheta,\bm{w})P_{0}(\bm{S}_{V})\right)
+\label{eq:2.5}\\
+w_{ij}(t+1)&=&w_{ij}(t)-\beta\eta_{ij}\left(
+\sum_{\bm{S}}S_{i}S_{j}P_{B}(\bm{S}|\btheta,\bm{w})
+-\sum_{\bm{S}}S_{i}S_{j}q_{0}(\bm{S}_{H}|\bm{S}_{V},\btheta,
+\bm{w})P_{0}(\bm{S}_{V})\right)\label{eq:2.26}
+\end{eqnarray}
+と定式化される。これを可視素子，隠れ素子に分けて記述する。$i,j\in V, k,l\in H$
+として書き直すと以下のようになる。ただし，$\langle\cdot\rangle_{B}$は$P_{B}$に関する
+期待値，$\langle\cdot\rangle_{0}$は$q_{0}$に関する期待値である。
+\begin{eqnarray}
+\theta_{i}(t+1)&=&\theta_{i}(t)-\beta\eta_{i}\left(\langle
+S_{i}\rangle_{B}-\frac{1}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}\right)\label{eq:2.27}\\
+\theta_{k}(t+1)&=&\theta_{k}(t)-\beta\eta_{k}\left(
+\langle S_{k}\rangle_{B}-\frac{1}{M}\sum_{\mu}^{M}\langle
+S_{k}\rangle_{0}^{\mu}\right)\label{eq:2.28}\\
+w_{ij}(t+1)&=&w_{ij}(t)-\beta\eta_{ij}\left(
+\langle S_{i}S_{j}\rangle_{B}
+-\frac{1}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}d_{j}^{\mu}\right)\label{eq:2.29}\\
+w_{kl}(t+1)&=&w_{kl}(t)-\beta\eta_{kl}\left(
+\langle S_{k}S_{l}\rangle_{B}-\frac{1}{M}\sum_{\mu=1}^{M}\langle
+S_{k}S_{l}\rangle_{0}^{\mu} \right)\label{eq:2.30}\\
+w_{ik}(t+1)&=&w_{ik}(t)-\beta\eta_{ik}\left(
+\langle S_{i}S_{k}\rangle_{B}-\frac{1}{M}\sum_{\mu=1}^{M}d_{i}^{\mu}
+\langle S_{k}\rangle_{0}^{\mu}\right)\label{eq:2.31}
+\end{eqnarray}
+原理的にはこれを繰り返し計算していくとで，学習の目的は達成される。しかし，ボルツマン分布
+$P_{B}(\bm{S}|\btheta,\bm{w})$に関する期待値は一般に計算困難であり，
+実際には禁じ計算手法を適用する必要がある。また，式$(\ref{eq:2.27}),(\ref{eq:2.29})$
+の括弧内の第一項は，それぞれ隠れ素子なしの場合の学習則$(\ref{eq:2.18}),(\ref{eq:2.19})$
+と同様の形となっており，データの統計量を求めることで計算できるが，式
+$(\ref{eq:2.28}),(\ref{eq:2.30}),(\ref{eq:2.31})$においては確率分布
+$q_{0}(\bm{S}_{H}|\bm{d}^{\mu},\btheta,\bm{w})$に関する期待値の計算についても計算量が
+膨大になるという問題を抱えている。したがって，これらの期待値を効率的に計算する手法の
+開発が課題となっており，多くの研究がなされてきている\cite{jordan1998learning}
+\cite{jordan2001graphical}\cite{Yasuda200683}。
+
+特に，近年Hintonにより提案されたCD法\cite{hinton2002training}は構造
+に制限をもたせたボルツマンマシンに対して有効な確率的近似学習アルゴリズムであり，
+さらなる応用が期待されている。CD法は可視素子どうし，隠れ素子同志の結合のない
+$(L_{V}=\varnothing,L_{H}=\varnothing)$という構造が制限された
+ボルツマンマシン(Restricted Boltzmann Machine:RBM)へしばしば
+適用される。可視素子どうし，隠れ素子同志に結合がない場合には，式$(\ref{eq:2.24})$
+の確率分布が
+\begin{equation}
+q_{0}(\bm{S}_{H}|\bm{S}_{V},\btheta,\bm{w})
+\propto\prod_{i\in H}\exp\left[-\beta\left(\theta_{i}
++\sum_{j\in\partial_{V}i}w_{ij}S_{j}\right)S_{i}\right]
+\label{eq:2.32}
+\end{equation}
+と整理される。これは隠れ素子に関して条件付き独立の形になっており，この性質を利用
+することで，計算の高速化が可能になる。
