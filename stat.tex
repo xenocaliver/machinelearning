@@ -174,7 +174,7 @@ L}\sum_{S_{i},S_{j}}\frac{1+S_{i}m_{i}+S_{j}m_{j}+S_{i}S_{j}m_{ij}}{4}
 ベーテ自由エネルギーの$\{m_{i},m_{ij}\}$に関する最小値を求めよう。
 $(\ref{eq:4.23})$を$m_{i}$で微分すると
 \begin{eqnarray}
-\frac{\partial\mathcal{F}}{\partial m}&=&-\theta_{i}+
+\frac{\partial\mathcal{F}}{\partial m_{i}}&=&-\theta_{i}+
 \frac{1-z_{i}}{\beta}\sum_{S_{i}}\frac{S_{i}}{2}\log\frac{1+S_{i}m_{i}}{2}
 +\frac{1}{\beta}\sum_{j\in\partial i}\sum_{S_{i},S_{j}}\frac{S_{i}}{4}
 \log\frac{1+S_{i}m_{i}+S_{j}m_{j}+S_{i}S_{j}m_{ij}}{4}\nonumber\\
@@ -273,19 +273,20 @@ m_{i}^{2}-m_{ij}^{2}+\cot(2\beta
 w_{ij})(2m_{ij}-2m_{i}m_{j})-1+m_{j}^{2}=0\nonumber
 \end{equation}
 \begin{equation}
-m_{ij}^{2}-2\cot(2\beta w_{ij})m_{ij}+2m_{i}m_{j}+1-m_{i}^2-m_{j}^{2}=0\nonumber
+m_{ij}^{2}-2\cot(2\beta w_{ij})m_{ij}+2m_{i}m_{j}\cot(2\beta
+w_{ij})+1-m_{i}^2-m_{j}^{2}=0\nonumber
 \end{equation}
 である。この$m_{ij}$に関する二次方程式を解くと
 \begin{equation}
 m_{ij}=\cot(2\beta w_{ij})\left\{1\pm
 \sqrt{1-(1-m_{i}^{2}-m_{j}^{2})\tanh^{2}(2\beta
-w_{ij})-2m_{i}m_{j}\tanh^{2}(2\beta w_{ij})}\right\}\label{eq:4.29}
+w_{ij})-2m_{i}m_{j}\tanh(2\beta w_{ij})}\right\}\label{eq:4.29}
 \end{equation}
 を得る。$|m_{ij}|\leqq 1$という条件から
 \begin{equation}
 m_{ij}=\cot(2\beta w_{ij})\left\{1-
 \sqrt{1-(1-m_{i}^{2}-m_{j}^{2})\tanh^{2}(2\beta
-w_{ij})-2m_{i}m_{j}\tanh^{2}(2\beta w_{ij})}\right\}\label{eq:4.30}
+w_{ij})-2m_{i}m_{j}\tanh(2\beta w_{ij})}\right\}\label{eq:4.30}
 \end{equation}
 が得られる。これが$m_{ij}$を決める式となる。
 
@@ -330,7 +331,7 @@ j}&=&-\frac{1}{4}\log\frac{a+c}{b+d}-\log\frac{a-c}{b-d}+\frac{1}{2}\log\frac{a}
 \end{eqnarray}
 ここで分子は
 \begin{equation}
-\frac{\sqrt{2a}}{\sqrt{a^{2}-c^{2}}}=\frac{a+c+a-c}{\sqrt{a^{2}-c^{2}}}
+\frac{2a}{\sqrt{a^{2}-c^{2}}}=\frac{a+c+a-c}{\sqrt{a^{2}-c^{2}}}
 =\sqrt{\frac{a+c}{a-c}}+\sqrt{\frac{a-c}{a+c}}\nonumber
 \end{equation}
 となる。分母も同様で，
@@ -399,7 +400,7 @@ j}&=&-\frac{1}{4}\log\frac{a+c}{b+d}-\log\frac{a-c}{b-d}+\frac{1}{2}\log\frac{a}
 \sum_{k\in\partial i\backslash j}\mathcal{M}_{k\rightarrow i}\right)
 \right]\label{eq:4.40}
 \end{equation}
-と変形できる。この式がメッセージ$\{\mathcal{M}_{i\rightarrow j}$を決める方程式となり，
+と変形できる。この式がメッセージ$\{\mathcal{M}_{i\rightarrow j}\}$を決める方程式となり，
 これを数値的に解くことによりメッセージ$\{\mathcal{M}_{i\rightarrow j}\}$の値を決める
 ことができる。これが決まれば，式$(\ref{eq:4.31})$より
 \begin{equation}

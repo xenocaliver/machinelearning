@@ -7,7 +7,7 @@
 $N$個のニューロン素子を考える。以下，ニューロン素子を単に素子と呼ぶ。
 この素子の集合のエネルギーを
 \begin{equation}
-E_{B}(\bm{S}|\btheta,\bm{w})\triangleq\sum_{i\in\itOmega}\theta_{i}S_{i}
+E_{B}(\bm{S}|\btheta,\bm{w})\triangleq-\sum_{i\in\itOmega}\theta_{i}S_{i}
 -\sum_{i,j\in L}w_{ij}S_{i}S_{j}\label{eq:2.1}
 \end{equation}
 と定義する。ここで，$\itOmega=\{1,2,\ldots,N\}$は素子の番号の集合，
@@ -209,7 +209,7 @@ $L_{V}$は結合している可視素子の集合，$L_{H}$は結合している
 \frac{\partial K(P_{0}\parallel P_{B})}{\partial w_{ij}}
 &=&\beta\sum_{\bm{S}}S_{i}S_{j}P_{B}(\bm{S}|\btheta,\bm{w})
 -\beta\sum_{\bm{S}}S_{i}S_{j}q_{0}(\bm{S}_{H}|\bm{S}_{V},\btheta,\bm{w})P_{0}(\bm{S}_{V})=0
-\label{eq:2.22}\nonumber\\
+\label{eq:2.22}
 \end{eqnarray}
 となる。ここで，
 \begin{eqnarray}
